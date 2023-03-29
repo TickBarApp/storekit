@@ -58,9 +58,15 @@ StoreKit.prototype.decodeNotification = function decodeNotification(signedPayloa
     return decodedPayload;
 };
 
-StoreKit.prototype.notifications = async function notifications(paginationToken) {
-    const response = await this.axios.get(
-        `/notifications/history${paginationToken ? `?paginationToken=${paginationToken}` : ''}`
+StoreKit.prototype.notifications = async function notifications(paginationToken, params = {}) {
+    const response = await this.axios.post(
+        `/notifications/history${paginationToken ? `?paginationToken=${paginationToken}` : ''}`,
+        params,
+        {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
     );
     jp.apply(response, '$.data.notificationHistory[*].signedPayload', (signedPayload) =>
         this.decodeNotification(signedPayload)
